@@ -58,3 +58,28 @@ export const deletedUser = async (req, res) => {
     await pool.query(` DELETE FROM users WHERE id = $1`, [id]);
     res.status(204).send();
 };
+
+
+export const getPostsByUserId = async (req, res) => {
+    const { id: user_id } = req.params;
+    const { rows: data } = await pool.query(
+        ` SELECT * FROM posts WHERE user_id = $1`,
+        [user_id],
+    );
+    res.json({
+        success: true,
+        data,
+    });
+};
+
+export const getPostsCountByUserId = async (req, res) => {
+    const { id: user_id } = req.params;
+    const { rows: data } = await pool.query(
+        ` SELECT COUNT(*) FROM posts WHERE user_id = $1`,
+        [user_id],
+    );
+    res.json({
+        success: true,
+        count: Number(data[0]?.count),
+    });
+};

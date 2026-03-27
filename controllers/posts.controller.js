@@ -7,7 +7,7 @@ export const getAllPosts = async (req, res) => {
         search,
         sortBy,
         sortOrder = "asc",
-        location,
+        author,
     } = req.query;
 
     let query = ` SELECT * FROM posts `;
@@ -16,6 +16,10 @@ export const getAllPosts = async (req, res) => {
     //searching
     if (search) {
         query += ` WHERE title ILIKE '%${search}%' OR content ILIKE '%${search}%'`;
+    }
+
+    if (author) {
+        query += ` WHERE user_id = ${author}`;
     }
 
     // sorting
@@ -49,7 +53,10 @@ export const getAllPosts = async (req, res) => {
 };
 export const getOnePost = async (req, res) => {
     const { id } = req.params;
-    const {rows:data} = await pool.query(` SELECT * FROM posts WHERE id = $1`, [id]);
+    const { rows: data } = await pool.query(
+        ` SELECT * FROM posts WHERE id = $1`,
+        [id],
+    );
     res.json({
         success: true,
         data,
@@ -83,4 +90,28 @@ export const deletedPost = async (req, res) => {
     const { id } = req.params;
     await pool.query(` DELETE FROM posts WHERE id = $1`, [id]);
     res.status(204).send();
+};
+
+export const getPostsByComment = async (req, res) => {
+    const { id: post_id } = req.params;
+    const { rows: data } = await pool.query(
+        ` SELECT * FROM comments WHERE post_id = $1`,
+        [post_id],
+    );
+    res.json({
+        success: true,
+        data,
+    });
+};
+
+export const getPostsCountLikes= async (req, res) => {
+    const { id: post_id } = req.params;
+    const { rows: data } = await pool.query(
+        ` SELECT COUNT(*) FROM likes WHERE post_id = $1`,
+        [post_id],
+    );
+    res.json({
+        success: true,
+        count: Number(data[0]?.count),
+    });
 };

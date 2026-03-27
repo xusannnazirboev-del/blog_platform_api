@@ -15,13 +15,19 @@ export const getpostsWithComment = async (req, res) => {
         ` SELECT * FROM comments WHERE post_id = $1`,
         [id],
     );
+    if (data.length < 0) {
+        res.status(400).send({
+            success: false,
+            message: "this post don't have comment",
+        });
+    }
     res.json({
         success: true,
         data,
     });
 };
 export const createComment = async (req, res) => {
-    const {text,post_id,user_id } = req.body;
+    const { text, post_id, user_id } = req.body;
     const { rows: data } = await pool.query(
         ` INSERT INTO comments (text,post_id,user_id) VALUES ($1, $2, $3);`,
         [text, post_id, user_id],
