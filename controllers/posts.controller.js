@@ -11,21 +11,11 @@ export const getAllPosts = async (req, res) => {
     } = req.query;
 
     let query = ` SELECT * FROM posts `;
-    const conditions = [];
     const offset = (page - 1) * limit;
 
     //searching
     if (search) {
         query += ` WHERE title ILIKE '%${search}%' OR content ILIKE '%${search}%'`;
-    }
-
-    //filtering
-    if (location) {
-        conditions.push(`location ILIKE '%${location}%'`);
-    }
-
-    if (conditions.length > 0) {
-        query += `WHERE ${conditions.join(" AND ")}`;
     }
 
     // sorting
